@@ -1,67 +1,147 @@
-## Foundry
+✅ Merkle Airdrop – Foundry Project
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+A complete Foundry-based implementation of a secure Merkle Tree Airdrop with:
+```
+✅ ERC20 token distribution
+✅ Merkle proof verification
+✅ EIP-712 typed signatures
+✅ Claim-once protection
+✅ Full deployment scripts
+✅ Unit tests
+✅ Utilities for generating Merkle tree + proofs
+```
+📌 Project Overview
 
-Foundry consists of:
+This project demonstrates how to distribute tokens to eligible users without storing a large on-chain whitelist, using:
 
-- **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
-- **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
-- **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
-- **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+🔹 Merkle Trees
 
-## Documentation
+Users prove inclusion with a Merkle proof.
 
-https://book.getfoundry.sh/
+🔹 EIP-712 Signatures
 
-## Usage
+Prevents unauthorized claims and replay attacks.
 
-### Build
+🔹 SafeERC20
 
-```shell
-$ forge build
+Ensures secure token transfers.
+
+🧱 Tech Stack
+```
+Component	Used For
+Foundry	Development, testing, fuzzing
+Solidity 0.8.24	Smart contracts
+OpenZeppelin Libraries	MerkleProof, SafeERC20, ECDSA
+EIP-712	Typed message signing
+Forge Scripts	Deployment + interaction
+JSON proof files	Off-chain Merkle generation
+```
+```
+📂 Folder Structure
+├─ src/
+│   ├─ MerkleAirdrop.sol
+│   └─ BagelToken.sol
+├─ script/
+│   ├─ DeployMerkleAirdrop.s.sol
+│   ├─ MakeMerkle.s.sol
+│   ├─ SplitSignature.s.sol
+│   ├─ Interact.s.sol
+├─ out/
+│   ├─ input.json
+│   └─ output.json
+├─ test/
+│   └─ Unit/
+│       └─ MerkleAirdrop.t.sol
+├─ lib/
+├─ foundry.toml
+└─ README.md
+```
+🚀 Setup Instructions
+1️⃣ Install Foundry
+```
+curl -L https://foundry.paradigm.xyz | bash
+foundryup
+```
+2️⃣ Install dependencies
+```
+forge install
+```
+3️⃣ Build
+```
+forge build
+```
+4️⃣ Run tests
+```
+forge test -vvv
+```
+🔑 Generating Merkle Tree & Proofs
+```
+forge script script/MakeMerkle.s.sol
 ```
 
-### Test
-
-```shell
-$ forge test
+Output includes:
 ```
-
-### Format
-
-```shell
-$ forge fmt
+input.json
+output.json
 ```
-
-### Gas Snapshots
-
-```shell
-$ forge snapshot
+📜 Deploying the Contract
+Deploy token + airdrop
 ```
-
-### Anvil
-
-```shell
-$ anvil
+forge script script/DeployMerkleAirdrop.s.sol --broadcast
 ```
-
-### Deploy
-
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
+Interact with deployment
 ```
-
-### Cast
-
-```shell
-$ cast <subcommand>
+forge script script/Interact.s.sol
 ```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
+🧪 Running Tests
 ```
-# Foundry-Merkle-Airdrop
+forge test -vvv
+```
+🧠 Example Solidity Claim Test Snippet
+```
+function testUsersCanClaim() public {
+    uint256 startingBalance = token.balanceOf(user);
+
+    vm.startPrank(user);
+    (uint8 v, bytes32 r, bytes32 s) = signMessage(user, amountToCollect);
+    vm.stopPrank();
+
+    vm.prank(gasPayer);
+    airdrop.claim(user, amountToCollect, proof, v, r, s);
+
+    uint256 endingBalance = token.balanceOf(user);
+    assertEq(endingBalance - startingBalance, amountToCollect);
+}
+```
+🔐 Security Considerations
+```
+✅ Prevents double-claiming
+✅ Protects against forged signatures
+✅ Uses SafeERC20 for safety
+✅ Merkle root cannot be modified
+```
+🧭 Learning Value for Security Researchers
+
+By reading this repo you learn:
+```
+✅ Merkle tree whitelist patterns
+✅ EIP-712 typed data hashing
+✅ Signature replay prevention
+✅ Claim authorization models
+✅ Airdrop attack surfaces
+```
+⭐ Contributing
+
+Pull requests welcome — especially:
+
+✅ fuzz tests
+✅ invariant tests
+✅ signature phishing examples
+
+📝 License
+
+MIT License — free to use & modify.
+
+🙌 Author
+
+Built by Harsh while learning secure and professional airdrop architecture in Foundry.
